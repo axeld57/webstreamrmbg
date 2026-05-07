@@ -29,5 +29,10 @@
       "matchPackageNames": ["http-proxy-agent", "https-proxy-agent", "socks-proxy-agent"],
       "allowedVersions": "<8"
     }
+    {
+      "description": "Pin sqlite3 below v6 (major breaking change)",
+      "matchPackageNames": ["sqlite3"],
+      "allowedVersions": "<6"
+    }
   ]
 }
