@@ -24,13 +24,18 @@ interface ResolutionCacheEntry {
   ts: number;
 }
 
+interface HubCdnResult {
+  url: URL;
+  delegateToHubCloud: boolean;
+}
+
 // Unified extractor for hubdrive/hubcloud/hubcdn — dedup via normalizeAsync() at registry level
 export class HubExtractor extends Extractor {
   public readonly id = 'hub';
 
   public readonly label = 'HubCloud';
 
-  public override readonly cacheVersion = 13;
+  public override readonly cacheVersion = 1;
 
   public override readonly ttl = HUBCLOUD_CACHE_TTL;
 
@@ -48,10 +53,20 @@ export class HubExtractor extends Extractor {
     return null !== url.host.match(/hubdrive|hubcloud|hubcdn/);
   }
 
-  // Resolve to canonical form for cache key; hubcdn as-is, hubcloud strip ?token=, hubdrive resolve→strip
-  public override async normalizeAsync(_ctx: Context, url: URL): Promise<URL> {
-    // HubCDN: ?id= is a file identifier, must not strip
+  // Resolve to canonical form for cache key; hubcdn→hubcloud strip, hubcloud strip ?token=, hubdrive resolve→strip
+  public override async normalizeAsync(ctx: Context, url: URL): Promise<URL> {
+    // HubCDN: resolve→hubcloud canonical or as-is for direct video hosts
     if (/hubcdn/.test(url.host)) {
+      try {
+        const headers = { Referer: url.href };
+        const html = await this.fetcher.text(ctx, url, { headers });
+        const result = this.extractHubCdnUrl(html);
+        if (result?.delegateToHubCloud) {
+          return this.stripQueryParams(result.url);
+        }
+      } catch {
+        // fall through
+      }
       return url;
     }
 
@@ -67,7 +82,7 @@ export class HubExtractor extends Extractor {
     }
 
     try {
-      const resolved = await this.resolveHubDriveToHubCloud(_ctx, url);
+      const resolved = await this.resolveHubDriveToHubCloud(ctx, url);
       if (resolved) {
         this.resolutionCache.set(url.href, { url: resolved.url, meta: resolved.meta, ts: Date.now() });
         return this.stripQueryParams(resolved.url);
@@ -85,11 +100,18 @@ export class HubExtractor extends Extractor {
       return [];
     }
 
-    // HubCDN → direct Google video URL extraction
+    // HubCDN → may redirect to HubCloud (needs further extraction) or direct video URL
     if (/hubcdn/.test(url.host)) {
       const headers = { Referer: meta.referer ?? url.href };
       const html = await this.fetcher.text(ctx, url, { headers });
-      return this.extractHubCdnResult(html, meta);
+      const result = this.extractHubCdnUrl(html);
+      if (!result) return [];
+      if (result.delegateToHubCloud) {
+        try {
+          return await this.hubCloud.extractInternal(ctx, result.url, meta);
+        } catch { return []; }
+      }
+      return [{ url: result.url, format: Format.unknown, meta }];
     }
 
     // HubDrive → try resolution cache first, then fallback
@@ -190,49 +212,61 @@ export class HubExtractor extends Extractor {
     }
   }
 
-  // Extract direct Google video URL from HubCDN page HTML
-  private extractHubCdnResult(html: string, meta: Meta): InternalUrlResult[] {
-    // Pattern 1: <a id="vd" href='URL'> (new hubcdn.fans format)
-    const vdMatch = html.match(/<a\s+id=["']vd["']\s+href=["']([^"']+)["']/i);
-    if (vdMatch?.[1]) {
-      try {
-        const directUrl = new URL(vdMatch[1]);
-        return [{ url: directUrl, format: Format.unknown, meta }];
-      // eslint-disable-next-line no-empty
-      } catch {
+  // Unified HubCDN extraction — handles /dl/?link=, ?r=BASE64, <a id="vd">, googleusercontent
+  private extractHubCdnUrl(html: string): HubCdnResult | null {
+    // Pattern 1: var reurl = "..."
+    const reurlMatch = html.match(/var\s+reurl\s*=\s*["']([^"']+)["']/);
+    if (reurlMatch?.[1]) {
+      const reurlValue = reurlMatch[1];
+
+      // 1a: /dl/?link=URL → extract link param
+      if (reurlValue.includes('hubcdn') && reurlValue.includes('/dl/?link=')) {
+        try {
+          const linkParam = new URL(reurlValue).searchParams.get('link');
+          if (linkParam) {
+            const targetUrl = new URL(linkParam);
+            return { url: targetUrl, delegateToHubCloud: /hubcloud/.test(targetUrl.host) };
+          }
+        } catch { /* fallthrough */ }
+      }
+
+      // 1b: ?r=BASE64 → decode (alternative mirror format)
+      const rMatch = reurlValue.match(/[?&]r=([A-Za-z0-9+/=]+)/);
+      if (rMatch?.[1]) {
+        try {
+          const decoded = atob(rMatch[1]);
+          const linkMatch = decoded.match(/[?&]link=(.+)$/);
+          const finalUrl = linkMatch?.[1] ? new URL(decodeURIComponent(linkMatch[1])) : new URL(decoded);
+          return { url: finalUrl, delegateToHubCloud: /hubcloud/.test(finalUrl.host) };
+        } catch { /* fallthrough */ }
+      }
+
+      // 1c: Plain URL (direct video URL — skip self-referential hubcdn/dl/ URLs)
+      if (!reurlValue.includes('/dl/?link=')) {
+        try {
+          const directUrl = new URL(reurlValue);
+          return { url: directUrl, delegateToHubCloud: /hubcloud/.test(directUrl.host) };
+        } catch { /* fallthrough */ }
       }
     }
 
-    // Pattern 2: var reurl = "URL" (legacy hubcdn.fans format)
-    const reurlMatch = html.match(/var\s+reurl\s*=\s*["']([^"']+)["']/);
-    if (reurlMatch?.[1]) {
+    // Pattern 2: <a id="vd" href='URL'>
+    const vdMatch = html.match(/<a\s+id=["']vd["']\s+href=["']([^"']+)["']/i);
+    if (vdMatch?.[1]) {
       try {
-        const reurlValue = reurlMatch[1];
-        if (reurlValue.includes('hubcdn') && reurlValue.includes('/dl/?link=')) {
-          const dlUrl = new URL(reurlValue);
-          const linkParam = dlUrl.searchParams.get('link');
-          if (linkParam) {
-            return [{ url: new URL(linkParam), format: Format.unknown, meta }];
-          }
-        }
-        const directUrl = new URL(reurlValue);
-        return [{ url: directUrl, format: Format.unknown, meta }];
-      // eslint-disable-next-line no-empty
-      } catch {
-      }
+        return { url: new URL(vdMatch[1]), delegateToHubCloud: false };
+      } catch { /* next */ }
     }
 
     // Pattern 3: any googleusercontent.com URL (fallback)
     const gdriveMatch = html.match(/(https?:\/\/[^\s"'<>]*googleusercontent\.com[^\s"'<>]*)/);
     if (gdriveMatch?.[1]) {
       try {
-        return [{ url: new URL(gdriveMatch[1]), format: Format.unknown, meta }];
-      // eslint-disable-next-line no-empty
-      } catch {
-      }
+        return { url: new URL(gdriveMatch[1]), delegateToHubCloud: false };
+      } catch { /* next */ }
     }
 
-    return [];
+    return null;
   }
 
   // Strip query params for canonical cache key
