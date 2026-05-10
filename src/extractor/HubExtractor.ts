@@ -2,25 +2,18 @@ import bytes from 'bytes';
 import * as cheerio from 'cheerio';
 import winston from 'winston';
 import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { Fetcher, findCountryCodes, findHeight } from '../utils';
+import { DEAD_HUBCLOUD_HOSTS, Fetcher, findCountryCodes, findHeight, HUB_HOST_PATTERN, HUBCLOUD_CACHE_TTL } from '../utils';
 import { Extractor } from './Extractor';
 import { HubCloud } from './HubCloud';
-
-const HUBCLOUD_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-
-const RESOLUTION_CACHE_TTL = HUBCLOUD_CACHE_TTL;
-
-const DEAD_HUBCLOUD_HOSTS = new Set([
-  'hubcloud.ink',
-  'hubcloud.co',
-  'hubcloud.cc',
-  'hubcloud.me',
-  'hubcloud.xyz',
-]);
 
 interface ResolutionCacheEntry {
   url: URL;
   meta: Partial<Meta>;
+  ts: number;
+}
+
+interface HubCdnCacheEntry {
+  result: HubCdnResult;
   ts: number;
 }
 
@@ -30,9 +23,8 @@ interface HubCdnResult {
 }
 
 /** True CDN (GDrive) vs HubCloud host that would duplicate. */
-const isCdnDirectUrl = (url: URL): boolean => /googleusercontent\.com/.test(url.host);
+const isCdnDirectUrl = (url: URL): boolean => /googleusercontent\.com/.test(url.hostname);
 
-// Unified extractor for hubdrive/hubcloud/hubcdn — dedup via normalizeAsync() at registry level
 export class HubExtractor extends Extractor {
   public readonly id = 'hub';
 
@@ -45,6 +37,7 @@ export class HubExtractor extends Extractor {
   private readonly hubCloud: HubCloud;
 
   private readonly resolutionCache = new Map<string, ResolutionCacheEntry>();
+  private readonly hubCdnCache = new Map<string, HubCdnCacheEntry>();
 
   public constructor(fetcher: Fetcher, logger: winston.Logger, hubCloud?: HubCloud) {
     super(fetcher, logger);
@@ -53,17 +46,15 @@ export class HubExtractor extends Extractor {
   }
 
   public supports(_ctx: Context, url: URL): boolean {
-    return null !== url.host.match(/hubdrive|hubcloud|hubcdn/);
+    return HUB_HOST_PATTERN.test(url.hostname);
   }
 
   // Resolve to canonical form for cache key; hubcdn→hubcloud strip, hubcloud strip ?token=, hubdrive resolve→strip
   public override async normalizeAsync(ctx: Context, url: URL): Promise<URL> {
     // HubCDN: resolve→hubcloud canonical or as-is for direct video hosts
-    if (/hubcdn/.test(url.host)) {
+    if (/hubcdn/.test(url.hostname)) {
       try {
-        const headers = { Referer: url.href };
-        const html = await this.fetcher.text(ctx, url, { headers });
-        const result = this.extractHubCdnUrl(html);
+        const result = await this.resolveHubCdnUrl(ctx, url);
         if (result?.delegateToHubCloud) {
           return this.stripQueryParams(result.url);
         }
@@ -74,13 +65,13 @@ export class HubExtractor extends Extractor {
     }
 
     // HubCloud: strip ephemeral ?token= for canonical cache key only
-    if (/hubcloud/.test(url.host)) {
+    if (/hubcloud/.test(url.hostname)) {
       return this.stripQueryParams(url);
     }
 
     // HubDrive: resolve→hubcloud then strip query params
     const cached = this.resolutionCache.get(url.href);
-    if (cached && Date.now() - cached.ts < RESOLUTION_CACHE_TTL) {
+    if (cached && Date.now() - cached.ts < HUBCLOUD_CACHE_TTL) {
       return this.stripQueryParams(cached.url);
     }
 
@@ -99,34 +90,36 @@ export class HubExtractor extends Extractor {
   }
 
   protected async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
-    if (DEAD_HUBCLOUD_HOSTS.has(url.host.toLowerCase())) {
+    if (DEAD_HUBCLOUD_HOSTS.has(url.hostname)) {
       return [];
     }
 
     // HubCDN → may redirect to HubCloud (needs further extraction) or direct video URL
-    if (/hubcdn/.test(url.host)) {
-      const headers = { Referer: meta.referer ?? url.href };
-      const html = await this.fetcher.text(ctx, url, { headers });
-      const result = this.extractHubCdnUrl(html);
-      if (!result) return [];
-      if (result.delegateToHubCloud) {
-        try {
-          return await this.hubCloud.extractInternal(ctx, result.url, meta);
-        } catch { return []; }
+    if (/hubcdn/.test(url.hostname)) {
+      try {
+        const result = await this.resolveHubCdnUrl(ctx, url);
+        if (!result) return [];
+        if (result.delegateToHubCloud) {
+          try {
+            return await this.hubCloud.extractInternal(ctx, result.url, meta);
+          } catch { return []; }
+        }
+        // True CDN direct URL (googleusercontent.com)
+        return [{
+          url: result.url,
+          format: Format.unknown,
+          meta,
+          label: 'HubCloud (CDN)',
+        }];
+      } catch {
+        return [];
       }
-      // True CDN direct URL (googleusercontent.com)
-      return [{
-        url: result.url,
-        format: Format.unknown,
-        meta,
-        label: 'HubCloud (CDN)',
-      }];
     }
 
     // HubDrive → try resolution cache first, then fallback
-    if (/hubdrive/.test(url.host)) {
+    if (/hubdrive/.test(url.hostname)) {
       const cached = this.resolutionCache.get(url.href);
-      if (cached && Date.now() - cached.ts < RESOLUTION_CACHE_TTL) {
+      if (cached && Date.now() - cached.ts < HUBCLOUD_CACHE_TTL) {
         try {
           const enrichedMeta: Meta = { ...cached.meta, ...meta, countryCodes: [...new Set([...cached.meta.countryCodes ?? [], ...meta.countryCodes ?? []])] };
           return await this.hubCloud.extractInternal(ctx, cached.url, enrichedMeta);
@@ -182,7 +175,7 @@ export class HubExtractor extends Extractor {
         if (!href) return null;
         try {
           const parsed = new URL(href);
-          if (DEAD_HUBCLOUD_HOSTS.has(parsed.host.toLowerCase())) return null;
+          if (DEAD_HUBCLOUD_HOSTS.has(parsed.hostname)) return null;
           return parsed;
         } catch {
           return null;
@@ -219,6 +212,24 @@ export class HubExtractor extends Extractor {
     } catch {
       return [];
     }
+  }
+
+  // Resolve HubCDN URL with in-memory cache to avoid double-fetch between normalizeAsync and extractInternal
+  private async resolveHubCdnUrl(ctx: Context, url: URL): Promise<HubCdnResult | null> {
+    const cached = this.hubCdnCache.get(url.href);
+    if (cached && Date.now() - cached.ts < HUBCLOUD_CACHE_TTL) {
+      return cached.result;
+    }
+
+    const headers = { Referer: url.href };
+    const html = await this.fetcher.text(ctx, url, { headers });
+    const result = this.extractHubCdnUrl(html);
+
+    if (result) {
+      this.hubCdnCache.set(url.href, { result, ts: Date.now() });
+    }
+
+    return result;
   }
 
   // Unified HubCDN extraction — handles /dl/?link=, ?r=BASE64, <a id="vd">, googleusercontent

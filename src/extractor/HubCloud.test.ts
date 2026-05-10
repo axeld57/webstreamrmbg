@@ -10,21 +10,7 @@ const extractorRegistry = new ExtractorRegistry(logger, [new HubCloud(new Fetche
 
 const ctx = createTestContext();
 
-describe('HubCloud dead domain skip', () => {
-  test('skips known dead HubCloud domains immediately', async () => {
-    const fetcher = new Fetcher(axios.create(), logger);
-    const hubCloud = new HubCloud(fetcher, logger);
-    const textSpy = jest.spyOn(fetcher, 'text');
-
-    const deadDomains = ['hubcloud.ink', 'hubcloud.co', 'hubcloud.cc', 'hubcloud.me', 'hubcloud.xyz'];
-    for (const domain of deadDomains) {
-      const result = await hubCloud.extract(ctx, new URL(`https://${domain}/drive/test123`), {});
-      expect(result).toEqual([]);
-    }
-
-    expect(textSpy).not.toHaveBeenCalled();
-  });
-
+describe('HubCloud live domain handling', () => {
   test('allows live HubCloud domains', async () => {
     const fetcher = new Fetcher(axios.create(), logger);
     const hubCloud = new HubCloud(fetcher, logger);

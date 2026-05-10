@@ -5,19 +5,10 @@ import { AnyNode } from 'domhandler';
 import Fuse from 'fuse.js';
 import { ContentType } from 'stremio-addon-sdk';
 import { Context, CountryCode, Meta } from '../types';
-import { Fetcher, findCountryCodes, getTmdbId, getTmdbNameAndYear, Id, TmdbId } from '../utils';
+import { DEAD_HUBCLOUD_HOSTS, Fetcher, findCountryCodes, getTmdbId, getTmdbNameAndYear, HUB_HOST_PATTERN, Id, TmdbId } from '../utils';
 import { resolveRedirectUrl } from './hd-hub-helper';
 import { Source, SourceResult } from './Source';
 
-const DEAD_DOMAINS = new Set([
-  'hubcloud.ink',
-  'hubcloud.co',
-  'hubcloud.cc',
-  'hubcloud.me',
-  'hubcloud.xyz',
-]);
-
-const HUB_PATTERNS = /hubcloud|hubdrive|hubcdn/;
 const PIXEL_PATTERNS = /pixel\.(hubcdn|rohitkiskk)/;
 
 export class FourKHDHub extends Source {
@@ -137,7 +128,7 @@ export class FourKHDHub extends Source {
     $('a', el)
       .filter((_i, a) => {
         const href = $(a).attr('href');
-        return !!href && HUB_PATTERNS.test(href);
+        return !!href && HUB_HOST_PATTERN.test(href.toLowerCase());
       })
       .each((_i, a) => {
         const href = $(a).attr('href') as string;
@@ -146,7 +137,7 @@ export class FourKHDHub extends Source {
           if (seenUrls.has(url.href)) return;
           seenUrls.add(url.href);
 
-          if (DEAD_DOMAINS.has(url.hostname.toLowerCase())) return;
+          if (DEAD_HUBCLOUD_HOSTS.has(url.hostname)) return;
           if (PIXEL_PATTERNS.test(url.href)) return;
 
           urls.push(url);
@@ -162,7 +153,7 @@ export class FourKHDHub extends Source {
   };
 
   private readonly resolveIfRedirect = async (ctx: Context, url: URL): Promise<URL> => {
-    if (/hubcloud|hubdrive|hubcdn/.test(url.hostname.toLowerCase())) {
+    if (HUB_HOST_PATTERN.test(url.hostname)) {
       return url;
     }
 

@@ -109,21 +109,30 @@ export class ExtractorRegistry {
     const mergedMeta: Meta = { ...meta, ...lazyUrlResults[0]?.meta };
     const urlResults = await extractor.extract(ctx, normalizedUrl, { extractorId: extractor.id, ...mergedMeta });
 
-    if (!Object.keys(mergedMeta).length || urlResults.some(urlResult => urlResult.error)) {
+    if (!Object.keys(mergedMeta).length) {
       await this.urlResultCache.delete(cacheKey);
       await this.lazyUrlResultCache.delete(canonicalUrl.href);
 
       return urlResults;
     }
 
-    // The server-side cache TTL must respect the shortest per-result TTL
-    const perResultTtl = urlResults.length ? Math.min(...urlResults.map(r => r.ttl)) : 43200000;
-    const ttl = urlResults.length ? Math.min(extractor.ttl, perResultTtl) : 43200000;
+    // Separate successful results from error results — cache only successes
+    const successResults = urlResults.filter(r => !r.error);
 
-    await this.urlResultCache.set<UrlResult[]>(cacheKey, urlResults, ttl);
+    if (successResults.length > 0) {
+      // The server-side cache TTL must respect the shortest per-result TTL
+      const perResultTtl = Math.min(...successResults.map(r => r.ttl));
+      const ttl = Math.min(extractor.ttl, perResultTtl);
 
-    if (extractor.id !== 'external') {
-      await this.lazyUrlResultCache.set<UrlResult[]>(canonicalUrl.href, urlResults, 86400000); // 24 hours
+      await this.urlResultCache.set<UrlResult[]>(cacheKey, successResults, ttl);
+
+      if (extractor.id !== 'external') {
+        await this.lazyUrlResultCache.set<UrlResult[]>(canonicalUrl.href, successResults, 86400000); // 24 hours
+      }
+    } else {
+      // All results are errors — don't cache, clear any stale cache
+      await this.urlResultCache.delete(cacheKey);
+      await this.lazyUrlResultCache.delete(canonicalUrl.href);
     }
 
     return urlResults;

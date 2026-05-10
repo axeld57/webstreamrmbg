@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio';
 import { ContentType } from 'stremio-addon-sdk';
 import { Context, CountryCode, Meta } from '../types';
-import { Fetcher, findCountryCodes, getImdbId, Id, ImdbId } from '../utils';
+import { DEAD_HUBCLOUD_HOSTS, Fetcher, findCountryCodes, getImdbId, HUB_HOST_PATTERN, Id, ImdbId } from '../utils';
 import { resolveRedirectUrl } from './hd-hub-helper';
 import { Source, SourceResult } from './Source';
 
@@ -32,13 +32,11 @@ export function resetCdnCache(): void {
   cdnDiscoveryTs = 0;
 }
 
-const HOST_PATTERNS = ['hubdrive', 'hubcloud', 'hubcdn'];
 const EXCLUDED_HREF_PATTERNS = ['gadgetsweb', '4khdhub', 'linksly', 'shareus', 'dood', 'desiupload', 'megaup', 'filepress', 'mediashore', 'ninjastream', 'hubstream'];
-const DEAD_HOST_DOMAINS = new Set(['hubcloud.ink', 'hubcloud.co', 'hubcloud.cc', 'hubcloud.me', 'hubcloud.xyz']);
 
 /** Canonical identity key for a hub URL — strips ephemeral query params for HubCloud, keeps full href otherwise. */
 const getCanonicalKey = (url: URL): string => {
-  if (/hubcloud/.test(url.host)) {
+  if (/hubcloud/.test(url.hostname)) {
     const u = new URL(url);
     u.search = '';
     return u.href;
@@ -151,10 +149,19 @@ export class HDHub4u extends Source {
   };
 
   private readonly handleHubLinks = async (ctx: Context, redirectUrl: URL, refererUrl: URL, meta: Meta): Promise<SourceResult[]> => {
-    const resolvedUrl = await resolveRedirectUrl(ctx, this.fetcher, redirectUrl);
+    let resolvedUrl: URL;
+    try {
+      resolvedUrl = await resolveRedirectUrl(ctx, this.fetcher, redirectUrl);
+    } catch {
+      return [];
+    }
 
-    if (HOST_PATTERNS.some(p => resolvedUrl.host.toLowerCase().includes(p))) {
-      if (!DEAD_HOST_DOMAINS.has(resolvedUrl.host.toLowerCase())) {
+    if (!resolvedUrl) {
+      return [];
+    }
+
+    if (HUB_HOST_PATTERN.test(resolvedUrl.hostname)) {
+      if (!DEAD_HUBCLOUD_HOSTS.has(resolvedUrl.hostname)) {
         return [{ url: resolvedUrl, meta: { ...meta, referer: refererUrl.href } }];
       }
       return [];
@@ -173,7 +180,7 @@ export class HDHub4u extends Source {
       const href = ($(el).attr('href') ?? '').toLowerCase();
       if (!href) return false;
       if (EXCLUDED_HREF_PATTERNS.some(p => href.includes(p))) return false;
-      return HOST_PATTERNS.some(p => href.includes(p));
+      return HUB_HOST_PATTERN.test(href);
     });
     const filteredLinks = allLinks.not(':contains("⚡")');
 
@@ -181,7 +188,7 @@ export class HDHub4u extends Source {
       .map((_i, el) => {
         try {
           const url = new URL($(el).attr('href') as string);
-          if (DEAD_HOST_DOMAINS.has(url.host.toLowerCase())) return null;
+          if (DEAD_HUBCLOUD_HOSTS.has(url.hostname)) return null;
           return { url, meta };
         } catch {
           return null;

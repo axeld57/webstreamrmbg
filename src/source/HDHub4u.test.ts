@@ -177,6 +177,28 @@ describe('HDHub4u internal methods', () => {
     expect(results).toEqual([]);
   });
 
+  test('handleHubLinks returns empty when resolveRedirectUrl throws', async () => {
+    const redirectUrl = new URL('https://gadgetsweb.xyz/id=abc');
+    const refererUrl = new URL('https://new6.hdhub4u.fo/superman');
+    const meta = { countryCodes: [CountryCode.multi] };
+
+    (resolveRedirectUrl as jest.Mock).mockRejectedValue(new Error('Network error'));
+
+    const results = await source['handleHubLinks'](ctx, redirectUrl, refererUrl, meta);
+    expect(results).toEqual([]);
+  });
+
+  test('handleHubLinks returns empty when resolveRedirectUrl returns undefined', async () => {
+    const redirectUrl = new URL('https://gadgetsweb.xyz/id=abc');
+    const refererUrl = new URL('https://new6.hdhub4u.fo/superman');
+    const meta = { countryCodes: [CountryCode.multi] };
+
+    (resolveRedirectUrl as jest.Mock).mockResolvedValue(undefined);
+
+    const results = await source['handleHubLinks'](ctx, redirectUrl, refererUrl, meta);
+    expect(results).toEqual([]);
+  });
+
   test('fetchPageUrlsFromSearch returns matching results', async () => {
     const baseUrl = new URL('https://new6.hdhub4u.fo/');
     const imdbId = new ImdbId('tt5950044', undefined, undefined);

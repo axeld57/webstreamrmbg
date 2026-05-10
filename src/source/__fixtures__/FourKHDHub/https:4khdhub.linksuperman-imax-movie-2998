@@ -1964,21 +1964,19 @@ p, .metadata-value, .episode-description, .movie-tagline {
           <div class="card-grid-small">
               
                         <!-- Related Series 1 -->
-            <a href="/swapped-movie-6702/" class="movie-card" aria-label="Swapped details">
+            <a href="/wwe-backlash-tampa-movie-6789/" class="movie-card" aria-label="WWE Backlash Tampa details">
               <div class="movie-card-image">
-                <img src="https://image.tmdb.org/t/p/w500/tHhxWxge06goXU6ZQH1hj7vK8Hd.jpg" alt="Swapped" class="w-full h-full object-cover">
+                <img src="https://image.tmdb.org/t/p/w500/9gDVet6WRuNXo4AZ4KynbA3KcT2.jpg" alt="WWE Backlash Tampa" class="w-full h-full object-cover">
                 
                 <div class="movie-card-overlay">
                   <div class="movie-card-formats">
-                                      <span class="movie-card-format">Adventure</span>
+                                      <span class="movie-card-format">Drama</span>
                   
-                                    <span class="movie-card-format">Fantasy</span>
-                  
-                                    <span class="movie-card-format">Animation</span>
+                                    <span class="movie-card-format">Action</span>
                   
                                     <span class="movie-card-format">Comedy</span>
                   
-                                    <span class="movie-card-format">Family</span>
+                                    <span class="movie-card-format">Reality</span>
                   
                                     <span class="movie-card-format">Hindi</span>
                   
@@ -1988,19 +1986,57 @@ p, .metadata-value, .episode-description, .movie-tagline {
                   
                                     <span class="movie-card-format">Netflix</span>
                   
-                                    <span class="movie-card-format">Tamil</span>
-                  
                                     <span class="movie-card-format">Movies</span>
                   
-                                    <span class="movie-card-format">DV HDR</span>
+                                    <span class="movie-card-format">60 FPS</span>
                   
-                                    <span class="movie-card-format">Telugu</span>
+                                    <span class="movie-card-format">Live</span>
+                  
+                                    <span class="movie-card-format">WWE</span>
                   
                                     </div>
                 </div>
               </div>
               <div class="movie-card-content">
-                <h3 class="movie-card-title">Swapped</h3>
+                <h3 class="movie-card-title">WWE Backlash Tampa</h3>
+                <p class="movie-card-meta">2026                              </p>
+              </div>
+            </a>
+            
+                        <!-- Related Series 1 -->
+            <a href="/project-hail-mary-imax-movie-6787/" class="movie-card" aria-label="Project Hail Mary [IMAX] details">
+              <div class="movie-card-image">
+                <img src="https://image.tmdb.org/t/p/w500/3djuZY3awNlaNKV3tMLMgNa484m.jpg" alt="Project Hail Mary [IMAX]" class="w-full h-full object-cover">
+                
+                <div class="movie-card-overlay">
+                  <div class="movie-card-formats">
+                                      <span class="movie-card-format">Adventure</span>
+                  
+                                    <span class="movie-card-format">Comedy</span>
+                  
+                                    <span class="movie-card-format">Science Fiction</span>
+                  
+                                    <span class="movie-card-format">English</span>
+                  
+                                    <span class="movie-card-format">2160p</span>
+                  
+                                    <span class="movie-card-format">1080p</span>
+                  
+                                    <span class="movie-card-format">WEB-DL</span>
+                  
+                                    <span class="movie-card-format">Movies</span>
+                  
+                                    <span class="movie-card-format">DV HDR</span>
+                  
+                                    <span class="movie-card-format">IMAX</span>
+                  
+                                    <span class="movie-card-format">SDR</span>
+                  
+                                    </div>
+                </div>
+              </div>
+              <div class="movie-card-content">
+                <h3 class="movie-card-title">Project Hail Mary [IMAX]</h3>
                 <p class="movie-card-meta">2026                              </p>
               </div>
             </a>
@@ -2046,68 +2082,42 @@ p, .metadata-value, .episode-description, .movie-tagline {
             </a>
             
                         <!-- Related Series 1 -->
-            <a href="/my-dearest-assassin-movie-6757/" class="movie-card" aria-label="My Dearest Assassin details">
+            <a href="/starman-movie-6786/" class="movie-card" aria-label="Starman details">
               <div class="movie-card-image">
-                <img src="https://image.tmdb.org/t/p/w500/ul4dQcA68mtSx8J56N5gEcaCCtP.jpg" alt="My Dearest Assassin" class="w-full h-full object-cover">
+                <img src="https://image.tmdb.org/t/p/w500/cgDeFWkYi6e9FT5RiQPCbQ9HlXZ.jpg" alt="Starman" class="w-full h-full object-cover">
                 
                 <div class="movie-card-overlay">
                   <div class="movie-card-formats">
                                       <span class="movie-card-format">Drama</span>
                   
-                                    <span class="movie-card-format">Action</span>
-                  
-                                    <span class="movie-card-format">Thriller</span>
+                                    <span class="movie-card-format">Science Fiction</span>
                   
                                     <span class="movie-card-format">Romance</span>
                   
-                                    <span class="movie-card-format">English</span>
+                                    <span class="movie-card-format">Hindi</span>
+                  
+                                    <span class="movie-card-format">Dual Language</span>
                   
                                     <span class="movie-card-format">2160p</span>
                   
                                     <span class="movie-card-format">1080p</span>
                   
-                                    <span class="movie-card-format">Netflix</span>
+                                    <span class="movie-card-format">BluRay</span>
+                  
+                                    <span class="movie-card-format">REMUX</span>
                   
                                     <span class="movie-card-format">Movies</span>
+                  
+                                    <span class="movie-card-format">10Bit</span>
                   
                                     <span class="movie-card-format">DV HDR</span>
                   
-                                    <span class="movie-card-format">SDR</span>
-                  
                                     </div>
                 </div>
               </div>
               <div class="movie-card-content">
-                <h3 class="movie-card-title">My Dearest Assassin</h3>
-                <p class="movie-card-meta">2026                              </p>
-              </div>
-            </a>
-            
-                        <!-- Related Series 1 -->
-            <a href="/nameless-knife-movie-6776/" class="movie-card" aria-label="Nameless Knife details">
-              <div class="movie-card-image">
-                <img src="https://media.themoviedb.org/t/p/original/5sDUU6LfH5ajl7ueCLAw221KVYD.jpg" alt="Nameless Knife" class="w-full h-full object-cover">
-                
-                <div class="movie-card-overlay">
-                  <div class="movie-card-formats">
-                                      <span class="movie-card-format">Action</span>
-                  
-                                    <span class="movie-card-format">Hindi</span>
-                  
-                                    <span class="movie-card-format">1080p</span>
-                  
-                                    <span class="movie-card-format">Movies</span>
-                  
-                                    <span class="movie-card-format">Amazon Prime Video</span>
-                  
-                                    <span class="movie-card-format">Chinese</span>
-                  
-                                    </div>
-                </div>
-              </div>
-              <div class="movie-card-content">
-                <h3 class="movie-card-title">Nameless Knife</h3>
-                <p class="movie-card-meta">2023                              </p>
+                <h3 class="movie-card-title">Starman</h3>
+                <p class="movie-card-meta">1984                              </p>
               </div>
             </a>
             

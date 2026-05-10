@@ -1,18 +1,8 @@
 import bytes from 'bytes';
 import * as cheerio from 'cheerio';
 import { Context, Format, InternalUrlResult, Meta } from '../types';
-import { findCountryCodes, findHeight } from '../utils';
+import { findCountryCodes, findHeight, HUBCLOUD_CACHE_TTL } from '../utils';
 import { Extractor } from './Extractor';
-
-const HUBCLOUD_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-
-const DEAD_DOMAINS = new Set([
-  'hubcloud.ink',
-  'hubcloud.co',
-  'hubcloud.cc',
-  'hubcloud.me',
-  'hubcloud.xyz',
-]);
 
 /** Delay before retrying Hop 1 after a failed Hop 2 (ms). */
 const RETRY_DELAY_MS = 2500;
@@ -77,14 +67,10 @@ export class HubCloud extends Extractor {
   public override readonly ttl = HUBCLOUD_CACHE_TTL;
 
   public supports(_ctx: Context, url: URL): boolean {
-    return null !== url.host.match(/hubcloud/);
+    return /hubcloud/.test(url.hostname);
   }
 
   public async extractInternal(ctx: Context, url: URL, meta: Meta): Promise<InternalUrlResult[]> {
-    if (DEAD_DOMAINS.has(url.host.toLowerCase())) {
-      return [];
-    }
-
     const headers = { Referer: meta.referer ?? url.href };
 
     const redirectHtml = await this.fetcher.text(ctx, url, { headers });
@@ -113,8 +99,9 @@ export class HubCloud extends Extractor {
       const rawRetryRedirectUrl = this.extractRedirectUrl(retryHtml);
       if (rawRetryRedirectUrl) {
         const retryRedirectUrl = rawRetryRedirectUrl.startsWith('http') ? rawRetryRedirectUrl : `${url.origin}${rawRetryRedirectUrl}`;
-        if (cookieName) {
-          this.fetcher.setCookie(retryRedirectUrl, `${cookieName}=s4t`);
+        const retryCookieName = this.extractCookieName(retryHtml);
+        if (retryCookieName) {
+          this.fetcher.setCookie(retryRedirectUrl, `${retryCookieName}=s4t`);
         }
         linksHtml = await this.fetcher.text(ctx, new URL(retryRedirectUrl), { headers: { Referer: url.href } });
         $ = cheerio.load(linksHtml);

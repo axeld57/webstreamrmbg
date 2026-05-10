@@ -1510,6 +1510,46 @@ p, .metadata-value, .episode-description, .movie-tagline {
           <div class="card-grid-small">
               
                         <!-- Related Series 1 -->
+            <a href="/wwe-backlash-tampa-movie-6789/" class="movie-card" aria-label="WWE Backlash Tampa details">
+              <div class="movie-card-image">
+                <img src="https://image.tmdb.org/t/p/w500/9gDVet6WRuNXo4AZ4KynbA3KcT2.jpg" alt="WWE Backlash Tampa" class="w-full h-full object-cover">
+                
+                <div class="movie-card-overlay">
+                  <div class="movie-card-formats">
+                                      <span class="movie-card-format">Drama</span>
+                  
+                                    <span class="movie-card-format">Action</span>
+                  
+                                    <span class="movie-card-format">Comedy</span>
+                  
+                                    <span class="movie-card-format">Reality</span>
+                  
+                                    <span class="movie-card-format">Hindi</span>
+                  
+                                    <span class="movie-card-format">English</span>
+                  
+                                    <span class="movie-card-format">1080p</span>
+                  
+                                    <span class="movie-card-format">Netflix</span>
+                  
+                                    <span class="movie-card-format">Movies</span>
+                  
+                                    <span class="movie-card-format">60 FPS</span>
+                  
+                                    <span class="movie-card-format">Live</span>
+                  
+                                    <span class="movie-card-format">WWE</span>
+                  
+                                    </div>
+                </div>
+              </div>
+              <div class="movie-card-content">
+                <h3 class="movie-card-title">WWE Backlash Tampa</h3>
+                <p class="movie-card-meta">2026                              </p>
+              </div>
+            </a>
+            
+                        <!-- Related Series 1 -->
             <a href="/mia-series-6758/" class="movie-card" aria-label="M.I.A. details">
               <div class="movie-card-image">
                 <img src="https://image.tmdb.org/t/p/w500/8voJ9AKuyrSyzxfoxwR4tpio82h.jpg" alt="M.I.A." class="w-full h-full object-cover">
@@ -1542,6 +1582,46 @@ p, .metadata-value, .episode-description, .movie-tagline {
               <div class="movie-card-content">
                 <h3 class="movie-card-title">M.I.A.</h3>
                 <p class="movie-card-meta">2026                • S1.0              </p>
+              </div>
+            </a>
+            
+                        <!-- Related Series 1 -->
+            <a href="/citadel-series-6596/" class="movie-card" aria-label="Citadel details">
+              <div class="movie-card-image">
+                <img src="https://image.tmdb.org/t/p/original/rIuJpbBcZjROIqvu9OKr3psP0zv.jpg" alt="Citadel" class="w-full h-full object-cover">
+                
+                <div class="movie-card-overlay">
+                  <div class="movie-card-formats">
+                                      <span class="movie-card-format">Drama</span>
+                  
+                                    <span class="movie-card-format">Thriller</span>
+                  
+                                    <span class="movie-card-format">Crime</span>
+                  
+                                    <span class="movie-card-format">Action & Adventure</span>
+                  
+                                    <span class="movie-card-format">Hindi</span>
+                  
+                                    <span class="movie-card-format">English</span>
+                  
+                                    <span class="movie-card-format">2160p</span>
+                  
+                                    <span class="movie-card-format">1080p</span>
+                  
+                                    <span class="movie-card-format">Series</span>
+                  
+                                    <span class="movie-card-format">DV HDR</span>
+                  
+                                    <span class="movie-card-format">Amazon Prime Video</span>
+                  
+                                    <span class="movie-card-format">SDR</span>
+                  
+                                    </div>
+                </div>
+              </div>
+              <div class="movie-card-content">
+                <h3 class="movie-card-title">Citadel</h3>
+                <p class="movie-card-meta">2023                • S1.0-S2.0              </p>
               </div>
             </a>
             
@@ -1584,84 +1664,6 @@ p, .metadata-value, .episode-description, .movie-tagline {
               <div class="movie-card-content">
                 <h3 class="movie-card-title">The Chestnut Man</h3>
                 <p class="movie-card-meta">2021                • S1.0-S2.0              </p>
-              </div>
-            </a>
-            
-                        <!-- Related Series 1 -->
-            <a href="/legends-series-6754/" class="movie-card" aria-label="Legends details">
-              <div class="movie-card-image">
-                <img src="https://image.tmdb.org/t/p/w500/eYYTgBtsvvA3fC1feyvoqv0G9Gl.jpg" alt="Legends" class="w-full h-full object-cover">
-                
-                <div class="movie-card-overlay">
-                  <div class="movie-card-formats">
-                                      <span class="movie-card-format">Drama</span>
-                  
-                                    <span class="movie-card-format">Crime</span>
-                  
-                                    <span class="movie-card-format">Action & Adventure</span>
-                  
-                                    <span class="movie-card-format">Hindi</span>
-                  
-                                    <span class="movie-card-format">English</span>
-                  
-                                    <span class="movie-card-format">1080p</span>
-                  
-                                    <span class="movie-card-format">Netflix</span>
-                  
-                                    <span class="movie-card-format">Tamil</span>
-                  
-                                    <span class="movie-card-format">Series</span>
-                  
-                                    <span class="movie-card-format">DV HDR</span>
-                  
-                                    <span class="movie-card-format">Telugu</span>
-                  
-                                    </div>
-                </div>
-              </div>
-              <div class="movie-card-content">
-                <h3 class="movie-card-title">Legends</h3>
-                <p class="movie-card-meta">2026                • S1.0              </p>
-              </div>
-            </a>
-            
-                        <!-- Related Series 1 -->
-            <a href="/citadel-series-6596/" class="movie-card" aria-label="Citadel details">
-              <div class="movie-card-image">
-                <img src="https://image.tmdb.org/t/p/original/rIuJpbBcZjROIqvu9OKr3psP0zv.jpg" alt="Citadel" class="w-full h-full object-cover">
-                
-                <div class="movie-card-overlay">
-                  <div class="movie-card-formats">
-                                      <span class="movie-card-format">Drama</span>
-                  
-                                    <span class="movie-card-format">Thriller</span>
-                  
-                                    <span class="movie-card-format">Crime</span>
-                  
-                                    <span class="movie-card-format">Action & Adventure</span>
-                  
-                                    <span class="movie-card-format">Hindi</span>
-                  
-                                    <span class="movie-card-format">English</span>
-                  
-                                    <span class="movie-card-format">2160p</span>
-                  
-                                    <span class="movie-card-format">1080p</span>
-                  
-                                    <span class="movie-card-format">Series</span>
-                  
-                                    <span class="movie-card-format">DV HDR</span>
-                  
-                                    <span class="movie-card-format">Amazon Prime Video</span>
-                  
-                                    <span class="movie-card-format">SDR</span>
-                  
-                                    </div>
-                </div>
-              </div>
-              <div class="movie-card-content">
-                <h3 class="movie-card-title">Citadel</h3>
-                <p class="movie-card-meta">2023                • S1.0-S2.0              </p>
               </div>
             </a>
             

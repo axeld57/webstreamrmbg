@@ -2041,9 +2041,43 @@ p, .metadata-value, .episode-description, .movie-tagline {
             </a>
             
                         <!-- Related Series 1 -->
-            <a href="/deep-sea-movie-6778/" class="movie-card" aria-label="Deep Sea details">
+            <a href="/wwe-smackdown-series-358/" class="movie-card" aria-label="WWE SmackDown details">
               <div class="movie-card-image">
-                <img src="https://image.tmdb.org/t/p/w500/znSKKjTpwnFmlieJtnlLoI6McKK.jpg" alt="Deep Sea" class="w-full h-full object-cover">
+                <img src="https://image.tmdb.org/t/p/original/1WA4RvB4aJ7LY4s9xEw0SkRaS5x.jpg" alt="WWE SmackDown" class="w-full h-full object-cover">
+                
+                <div class="movie-card-overlay">
+                  <div class="movie-card-formats">
+                                      <span class="movie-card-format">Action</span>
+                  
+                                    <span class="movie-card-format">Reality</span>
+                  
+                                    <span class="movie-card-format">Hindi</span>
+                  
+                                    <span class="movie-card-format">English</span>
+                  
+                                    <span class="movie-card-format">Netflix</span>
+                  
+                                    <span class="movie-card-format">Series</span>
+                  
+                                    <span class="movie-card-format">60 FPS</span>
+                  
+                                    <span class="movie-card-format">Live</span>
+                  
+                                    <span class="movie-card-format">WWE</span>
+                  
+                                    </div>
+                </div>
+              </div>
+              <div class="movie-card-content">
+                <h3 class="movie-card-title">WWE SmackDown</h3>
+                <p class="movie-card-meta">2025                • S27.0-S28.0 EP19              </p>
+              </div>
+            </a>
+            
+                        <!-- Related Series 1 -->
+            <a href="/harry-potter-and-the-half-blood-prince-movie-6783/" class="movie-card" aria-label="Harry Potter and the Half-Blood Prince details">
+              <div class="movie-card-image">
+                <img src="https://image.tmdb.org/t/p/w500/dJmr4wSxEDzOXslDAfBxLraehs3.jpg" alt="Harry Potter and the Half-Blood Prince" class="w-full h-full object-cover">
                 
                 <div class="movie-card-overlay">
                   <div class="movie-card-formats">
@@ -2051,11 +2085,53 @@ p, .metadata-value, .episode-description, .movie-tagline {
                   
                                     <span class="movie-card-format">Fantasy</span>
                   
-                                    <span class="movie-card-format">Animation</span>
+                                    <span class="movie-card-format">Hindi</span>
                   
-                                    <span class="movie-card-format">Drama</span>
+                                    <span class="movie-card-format">Dual Language</span>
                   
-                                    <span class="movie-card-format">Mystery</span>
+                                    <span class="movie-card-format">2160p</span>
+                  
+                                    <span class="movie-card-format">1080p</span>
+                  
+                                    <span class="movie-card-format">WEB-DL</span>
+                  
+                                    <span class="movie-card-format">BluRay</span>
+                  
+                                    <span class="movie-card-format">Movies</span>
+                  
+                                    <span class="movie-card-format">DV HDR</span>
+                  
+                                    <span class="movie-card-format">60 FPS</span>
+                  
+                                    <span class="movie-card-format">Open Matte</span>
+                  
+                                    <span class="movie-card-format">SDR</span>
+                  
+                                    </div>
+                </div>
+              </div>
+              <div class="movie-card-content">
+                <h3 class="movie-card-title">Harry Potter and the Half-Blood Prince</h3>
+                <p class="movie-card-meta">2009                              </p>
+              </div>
+            </a>
+            
+                        <!-- Related Series 1 -->
+            <a href="/the-misfits-movie-6782/" class="movie-card" aria-label="The Misfits details">
+              <div class="movie-card-image">
+                <img src="https://image.tmdb.org/t/p/w500/dPOyYnCkRbWAEem85N3VFpQODf5.jpg" alt="The Misfits" class="w-full h-full object-cover">
+                
+                <div class="movie-card-overlay">
+                  <div class="movie-card-formats">
+                                      <span class="movie-card-format">Action</span>
+                  
+                                    <span class="movie-card-format">Thriller</span>
+                  
+                                    <span class="movie-card-format">Hindi</span>
+                  
+                                    <span class="movie-card-format">English</span>
+                  
+                                    <span class="movie-card-format">Dual Language</span>
                   
                                     <span class="movie-card-format">1080p</span>
                   
@@ -2069,80 +2145,12 @@ p, .metadata-value, .episode-description, .movie-tagline {
                   
                                     <span class="movie-card-format">10Bit</span>
                   
-                                    <span class="movie-card-format">Chinese</span>
-                  
                                     </div>
                 </div>
               </div>
               <div class="movie-card-content">
-                <h3 class="movie-card-title">Deep Sea</h3>
-                <p class="movie-card-meta">2023                              </p>
-              </div>
-            </a>
-            
-                        <!-- Related Series 1 -->
-            <a href="/my-dearest-assassin-movie-6757/" class="movie-card" aria-label="My Dearest Assassin details">
-              <div class="movie-card-image">
-                <img src="https://image.tmdb.org/t/p/w500/ul4dQcA68mtSx8J56N5gEcaCCtP.jpg" alt="My Dearest Assassin" class="w-full h-full object-cover">
-                
-                <div class="movie-card-overlay">
-                  <div class="movie-card-formats">
-                                      <span class="movie-card-format">Drama</span>
-                  
-                                    <span class="movie-card-format">Action</span>
-                  
-                                    <span class="movie-card-format">Thriller</span>
-                  
-                                    <span class="movie-card-format">Romance</span>
-                  
-                                    <span class="movie-card-format">English</span>
-                  
-                                    <span class="movie-card-format">2160p</span>
-                  
-                                    <span class="movie-card-format">1080p</span>
-                  
-                                    <span class="movie-card-format">Netflix</span>
-                  
-                                    <span class="movie-card-format">Movies</span>
-                  
-                                    <span class="movie-card-format">DV HDR</span>
-                  
-                                    <span class="movie-card-format">SDR</span>
-                  
-                                    </div>
-                </div>
-              </div>
-              <div class="movie-card-content">
-                <h3 class="movie-card-title">My Dearest Assassin</h3>
-                <p class="movie-card-meta">2026                              </p>
-              </div>
-            </a>
-            
-                        <!-- Related Series 1 -->
-            <a href="/nameless-knife-movie-6776/" class="movie-card" aria-label="Nameless Knife details">
-              <div class="movie-card-image">
-                <img src="https://media.themoviedb.org/t/p/original/5sDUU6LfH5ajl7ueCLAw221KVYD.jpg" alt="Nameless Knife" class="w-full h-full object-cover">
-                
-                <div class="movie-card-overlay">
-                  <div class="movie-card-formats">
-                                      <span class="movie-card-format">Action</span>
-                  
-                                    <span class="movie-card-format">Hindi</span>
-                  
-                                    <span class="movie-card-format">1080p</span>
-                  
-                                    <span class="movie-card-format">Movies</span>
-                  
-                                    <span class="movie-card-format">Amazon Prime Video</span>
-                  
-                                    <span class="movie-card-format">Chinese</span>
-                  
-                                    </div>
-                </div>
-              </div>
-              <div class="movie-card-content">
-                <h3 class="movie-card-title">Nameless Knife</h3>
-                <p class="movie-card-meta">2023                              </p>
+                <h3 class="movie-card-title">The Misfits</h3>
+                <p class="movie-card-meta">2021                              </p>
               </div>
             </a>
             

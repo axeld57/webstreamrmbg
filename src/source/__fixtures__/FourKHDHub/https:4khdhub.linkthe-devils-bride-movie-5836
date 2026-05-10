@@ -1531,19 +1531,55 @@ p, .metadata-value, .episode-description, .movie-tagline {
             </a>
             
                         <!-- Related Series 1 -->
-            <a href="/my-dearest-assassin-movie-6757/" class="movie-card" aria-label="My Dearest Assassin details">
+            <a href="/the-misfits-movie-6782/" class="movie-card" aria-label="The Misfits details">
               <div class="movie-card-image">
-                <img src="https://image.tmdb.org/t/p/w500/ul4dQcA68mtSx8J56N5gEcaCCtP.jpg" alt="My Dearest Assassin" class="w-full h-full object-cover">
+                <img src="https://image.tmdb.org/t/p/w500/dPOyYnCkRbWAEem85N3VFpQODf5.jpg" alt="The Misfits" class="w-full h-full object-cover">
+                
+                <div class="movie-card-overlay">
+                  <div class="movie-card-formats">
+                                      <span class="movie-card-format">Action</span>
+                  
+                                    <span class="movie-card-format">Thriller</span>
+                  
+                                    <span class="movie-card-format">Hindi</span>
+                  
+                                    <span class="movie-card-format">English</span>
+                  
+                                    <span class="movie-card-format">Dual Language</span>
+                  
+                                    <span class="movie-card-format">1080p</span>
+                  
+                                    <span class="movie-card-format">HEVC</span>
+                  
+                                    <span class="movie-card-format">BluRay</span>
+                  
+                                    <span class="movie-card-format">REMUX</span>
+                  
+                                    <span class="movie-card-format">Movies</span>
+                  
+                                    <span class="movie-card-format">10Bit</span>
+                  
+                                    </div>
+                </div>
+              </div>
+              <div class="movie-card-content">
+                <h3 class="movie-card-title">The Misfits</h3>
+                <p class="movie-card-meta">2021                              </p>
+              </div>
+            </a>
+            
+                        <!-- Related Series 1 -->
+            <a href="/unconditional-series-6780/" class="movie-card" aria-label="Unconditional details">
+              <div class="movie-card-image">
+                <img src="https://image.tmdb.org/t/p/w500/l8fk8AvFzOT47LO13BcaKglqNZQ.jpg" alt="Unconditional" class="w-full h-full object-cover">
                 
                 <div class="movie-card-overlay">
                   <div class="movie-card-formats">
                                       <span class="movie-card-format">Drama</span>
                   
-                                    <span class="movie-card-format">Action</span>
-                  
                                     <span class="movie-card-format">Thriller</span>
                   
-                                    <span class="movie-card-format">Romance</span>
+                                    <span class="movie-card-format">Crime</span>
                   
                                     <span class="movie-card-format">English</span>
                   
@@ -1551,11 +1587,11 @@ p, .metadata-value, .episode-description, .movie-tagline {
                   
                                     <span class="movie-card-format">1080p</span>
                   
-                                    <span class="movie-card-format">Netflix</span>
-                  
-                                    <span class="movie-card-format">Movies</span>
+                                    <span class="movie-card-format">Series</span>
                   
                                     <span class="movie-card-format">DV HDR</span>
+                  
+                                    <span class="movie-card-format">Apple TV+</span>
                   
                                     <span class="movie-card-format">SDR</span>
                   
@@ -1563,40 +1599,8 @@ p, .metadata-value, .episode-description, .movie-tagline {
                 </div>
               </div>
               <div class="movie-card-content">
-                <h3 class="movie-card-title">My Dearest Assassin</h3>
-                <p class="movie-card-meta">2026                              </p>
-              </div>
-            </a>
-            
-                        <!-- Related Series 1 -->
-            <a href="/lake-george-movie-6775/" class="movie-card" aria-label="Lake George details">
-              <div class="movie-card-image">
-                <img src="https://image.tmdb.org/t/p/w500/7nqwvs1DORz65GtV7MeNBfqBxQW.jpg" alt="Lake George" class="w-full h-full object-cover">
-                
-                <div class="movie-card-overlay">
-                  <div class="movie-card-formats">
-                                      <span class="movie-card-format">Comedy</span>
-                  
-                                    <span class="movie-card-format">Thriller</span>
-                  
-                                    <span class="movie-card-format">Crime</span>
-                  
-                                    <span class="movie-card-format">Hindi</span>
-                  
-                                    <span class="movie-card-format">English</span>
-                  
-                                    <span class="movie-card-format">1080p</span>
-                  
-                                    <span class="movie-card-format">Movies</span>
-                  
-                                    <span class="movie-card-format">Amazon Prime Video</span>
-                  
-                                    </div>
-                </div>
-              </div>
-              <div class="movie-card-content">
-                <h3 class="movie-card-title">Lake George</h3>
-                <p class="movie-card-meta">2024                              </p>
+                <h3 class="movie-card-title">Unconditional</h3>
+                <p class="movie-card-meta">2026                • S1.0              </p>
               </div>
             </a>
             

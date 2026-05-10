@@ -326,7 +326,9 @@ describe('resolve', () => {
     const streams = await streamResolver.resolve(ctx, [new MockSource()], 'movie', new ImdbId('tt11655566', undefined, undefined));
     expect(streams).toMatchSnapshot();
 
-    const streamsWithShowErrors = await streamResolver.resolve({ ...ctx, config: { ...ctx.config, showErrors: 'on' } }, [new MockSource()], 'movie', new ImdbId('tt11655566', undefined, undefined));
+    // Use a fresh ExtractorRegistry so the cache doesn't filter out error results
+    const streamResolverWithShowErrors = new StreamResolver(logger, new ExtractorRegistry(logger, [new MockExtractor(fetcher, logger)]));
+    const streamsWithShowErrors = await streamResolverWithShowErrors.resolve({ ...ctx, config: { ...ctx.config, showErrors: 'on' } }, [new MockSource()], 'movie', new ImdbId('tt11655566', undefined, undefined));
     expect(streamsWithShowErrors).toMatchSnapshot();
   });
 

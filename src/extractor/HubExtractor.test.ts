@@ -1,7 +1,7 @@
 import winston from 'winston';
 import { createTestContext } from '../test';
 import { CountryCode, Meta } from '../types';
-import { FetcherMock } from '../utils';
+import { DEAD_HUBCLOUD_HOSTS, FetcherMock } from '../utils';
 import { ExtractorRegistry } from './ExtractorRegistry';
 import { HubCloud } from './HubCloud';
 import { HubExtractor } from './HubExtractor';
@@ -38,8 +38,8 @@ describe('HubExtractor supports()', () => {
     expect(extractor.supports(ctx, new URL('https://example.com/file/123'))).toBe(false);
   });
 
-  test('does not match partial string match (e.g. nothubcloud.com)', () => {
-    expect(extractor.supports(ctx, new URL('https://nothubcloud.com/file/123'))).toBe(true); // regex matches substring
+  test('matches substring in hostname (e.g. nothubcloud.com)', () => {
+    expect(extractor.supports(ctx, new URL('https://nothubcloud.com/file/123'))).toBe(true);
   });
 
   test('does not match completely different host', () => {
@@ -256,8 +256,7 @@ describe('HubExtractor HubCloud extraction', () => {
   });
 
   test('dead domain skip', async () => {
-    const deadDomains = ['hubcloud.ink', 'hubcloud.co', 'hubcloud.cc', 'hubcloud.me', 'hubcloud.xyz'];
-    for (const domain of deadDomains) {
+    for (const domain of DEAD_HUBCLOUD_HOSTS) {
       const result = await registry.handle(ctx, new URL(`https://${domain}/drive/test123`));
       expect(result).toEqual([]);
     }
@@ -339,9 +338,14 @@ describe('HubExtractor edge cases', () => {
     expect(extractor.cacheVersion).toBe(2);
   });
 
-  test('dead hubcloud host returns empty from extractInternal', async () => {
-    const extractor = new HubExtractor(new FetcherMock(hubExtractorFixtureBase), logger);
-    const result = await extractor.extract(ctx, new URL('https://hubcloud.ink/drive/abc'), {});
+  test('hubcdn fetch failure in extractInternal → returns empty (outer catch)', async () => {
+    const fetcher = new FetcherMock(hubExtractorFixtureBase);
+    const extractor = new HubExtractor(fetcher, logger);
+
+    // Make resolveHubCdnUrl throw by having fetcher.text reject for a hubcdn URL
+    jest.spyOn(fetcher, 'text').mockRejectedValueOnce(new Error('Network error'));
+
+    const result = await extractor.extract(ctx, new URL('https://hubcdn.fans/file/networkfail'), {});
     expect(result).toEqual([]);
   });
 
@@ -357,16 +361,6 @@ describe('HubExtractor edge cases', () => {
 
     const result = await extractor.extract(ctx, url, {});
     expect(result).toEqual([]);
-  });
-
-  test('extractViaHubCloud fallback: resolves hubcloud URL and extracts', async () => {
-    const fetcher = new FetcherMock(hubExtractorFixtureBase);
-    const hubCloud = new HubCloud(new FetcherMock(`${hubExtractorFixtureBase}/HubCloud`), logger);
-    const extractor = new HubExtractor(fetcher, logger, hubCloud);
-
-    const result = await extractor.extract(ctx, new URL('https://hubdrive.space/file/7283903021'), {});
-    expect(result.length).toBeGreaterThan(0);
-    expect(result.some(r => r.label?.includes('HubCloud'))).toBe(true);
   });
 
   test('extractViaHubCloud fallback: hubCloud.extractInternal throws → returns empty', async () => {

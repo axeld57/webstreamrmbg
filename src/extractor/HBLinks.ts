@@ -1,11 +1,9 @@
 import * as cheerio from 'cheerio';
 import winston from 'winston';
 import { Context, InternalUrlResult, Meta } from '../types';
-import { Fetcher, findCountryCodes, findHeight } from '../utils';
+import { Fetcher, findCountryCodes, findHeight, HUB_HOST_PATTERN } from '../utils';
 import { Extractor } from './Extractor';
 import { HubExtractor } from './HubExtractor';
-
-const HUB_HOST_PATTERN = /hubcdn|hubcloud|hubdrive/;
 
 export class HBLinks extends Extractor {
   public readonly id = 'hblinks';
@@ -34,7 +32,8 @@ export class HBLinks extends Extractor {
     let html: string;
     try {
       html = await this.fetcher.text(ctx, url, { headers });
-    } catch {
+    } catch (error) {
+      this.logger.warn(`HBLinks page fetch failed for ${url.href}: ${error}`);
       return [];
     }
 
@@ -68,8 +67,8 @@ export class HBLinks extends Extractor {
     for (const hubUrl of uniqueLinks) {
       try {
         results.push(...await this.hubExtractor.extract(ctx, hubUrl, updatedMeta));
-      } catch {
-        // skip failed extraction
+      } catch (error) {
+        this.logger.warn(`HBLinks extraction failed for ${hubUrl.href}: ${error}`);
       }
     }
 
@@ -83,7 +82,7 @@ export class HBLinks extends Extractor {
 
     $('a[href]').each((_i, el) => {
       const href = $(el).attr('href');
-      if (href && HUB_HOST_PATTERN.test(href)) {
+      if (href && HUB_HOST_PATTERN.test(href.toLowerCase())) {
         try {
           const parsedUrl = new URL(href, pageUrl);
           const key = parsedUrl.href;
