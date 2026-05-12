@@ -51,6 +51,8 @@ export type CustomRequestConfig = AxiosRequestConfig & {
 };
 
 export class Fetcher {
+  private static readonly DEFAULT_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
+
   private readonly DEFAULT_TIMEOUT = 10000;
   private readonly DEFAULT_QUEUE_LIMIT = 50;
   private readonly DEFAULT_QUEUE_TIMEOUT = 10000;
@@ -85,6 +87,9 @@ export class Fetcher {
 
   private readonly cfProtectedDomains = new Map<string, number>();
   private readonly CF_DOMAIN_CACHE_TTL = 60 * 60 * 1000; // 1 hour
+  private readonly GOT_SCRAPING_BYPASS_TTL = 60 * 60 * 1000; // 1 hour
+  private static gotScrapingBypassedDomains = new Map<string, number>();
+  private static gotScraping: typeof import('got-scraping').gotScraping | undefined;
 
   public constructor(axios: AxiosInstance, logger: winston.Logger) {
     this.axios = axios;
@@ -99,6 +104,7 @@ export class Fetcher {
       flareSolverrCircuitOpen: Date.now() < this.flareSolverrOpenUntil,
       flareSolverrFailures: this.flareSolverrFailures,
       cfProtectedDomains: Object.fromEntries(this.cfProtectedDomains),
+      gotScrapingBypassedDomains: Object.fromEntries(Fetcher.gotScrapingBypassedDomains),
     };
   };
 
@@ -216,7 +222,7 @@ export class Fetcher {
           'Accept-Language': 'en',
           ...(url.username && { Authorization: 'Basic ' + Buffer.from(`${url.username}:${url.password}`).toString('base64') }),
           'Priority': 'u=0',
-          'User-Agent': this.hostUserAgentMap.get(url.host) ?? 'Mozilla',
+          'User-Agent': this.hostUserAgentMap.get(url.host) ?? Fetcher.DEFAULT_USER_AGENT,
           ...(cookieString && { Cookie: cookieString }),
           ...(ctx.ip && !requestConfig?.noProxyHeaders && {
             'Forwarded': `by=unknown;for=${ctx.ip};host=${url.host};proto=${forwardedProto}`,
@@ -376,6 +382,11 @@ export class Fetcher {
         throw new BlockedError(url, BlockedReason.media_flow_proxy_auth, response.headers);
       }
 
+      const gotScrapingResult = await this.fallbackToGotScraping(ctx, url, requestConfig);
+      if (gotScrapingResult) {
+        return gotScrapingResult;
+      }
+
       throw new BlockedError(url, BlockedReason.unknown, response.headers);
     }
 
@@ -518,5 +529,79 @@ export class Fetcher {
         this.flareSolverrFailures = 0;
       }
     }
+  }
+
+  private async loadGotScraping(): Promise<typeof import('got-scraping').gotScraping | undefined> {
+    if (Fetcher.gotScraping) {
+      return Fetcher.gotScraping;
+    }
+
+    try {
+      const mod = await import('got-scraping');
+      Fetcher.gotScraping = mod.gotScraping;
+      return Fetcher.gotScraping;
+    } catch {
+      return undefined;
+    }
+  }
+
+  private async fallbackToGotScraping(ctx: Context, url: URL, requestConfig?: CustomRequestConfig): Promise<AxiosResponse | null> {
+    if (requestConfig?.method && requestConfig.method !== 'GET') {
+      return null;
+    }
+
+    const bypassedAt = Fetcher.gotScrapingBypassedDomains.get(url.hostname);
+    if (bypassedAt && Date.now() - bypassedAt < this.GOT_SCRAPING_BYPASS_TTL) {
+      return null;
+    }
+    if (bypassedAt) {
+      Fetcher.gotScrapingBypassedDomains.delete(url.hostname);
+    }
+
+    const gotScraping = await this.loadGotScraping();
+    if (!gotScraping) {
+      return null;
+    }
+
+    this.logger.info(`Retry with got-scraping for ${url}`, ctx);
+
+    try {
+      const cookieString = this.cookieJar.getCookieStringSync(url.href);
+      const resp = await gotScraping.get(url.href, {
+        headers: {
+          ...(cookieString && { Cookie: cookieString }),
+          ...(typeof requestConfig?.headers === 'object' && requestConfig.headers),
+        } as Record<string, string>,
+        timeout: { request: requestConfig?.timeout ?? this.DEFAULT_TIMEOUT },
+        throwHttpErrors: false,
+      });
+
+      if (resp.statusCode >= 200 && resp.statusCode <= 399) {
+        this.logger.info(`got-scraping bypassed CF for ${url.hostname}`, ctx);
+        Fetcher.gotScrapingBypassedDomains.set(url.hostname, Date.now());
+
+        const setCookieHeaders = resp.headers['set-cookie'];
+        if (setCookieHeaders) {
+          const cookies = Array.isArray(setCookieHeaders) ? setCookieHeaders : [setCookieHeaders];
+          for (const cookieStr of cookies) {
+            try {
+              this.cookieJar.setCookieSync(cookieStr as string, url.href);
+            } catch { /* ignore */ }
+          }
+        }
+
+        return {
+          status: resp.statusCode,
+          statusText: resp.statusMessage ?? '',
+          headers: resp.headers as AxiosResponse['headers'],
+          data: resp.body,
+          config: { headers: resp.headers as Record<string, string> } as AxiosRequestConfig,
+        } as AxiosResponse;
+      }
+    } catch (e) {
+      this.logger.info(`got-scraping failed for ${url}: ${e}`, ctx);
+    }
+
+    return null;
   }
 }
