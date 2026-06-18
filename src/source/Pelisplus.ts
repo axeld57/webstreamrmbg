@@ -3,36 +3,28 @@ import { TmdbId } from '../utils';
 import { Source } from './Source';
 
 export class Pelisplus extends Source {
-  // 1. Corregido: Se añade 'override' a los elementos heredados de Source
   override id = 'pelisplus';
   override label = 'PelisplusHD';
   override baseUrl = 'https://pelisplushd.club';
   
-  // 2. Corregido: Agregamos las propiedades abstractas obligatorias que faltaban
   override contentTypes: ('movie' | 'series')[] = ['movie', 'series'];
   override countryCodes = ['MX', 'ES'];
 
-  // 3. Corregido: Constructor explícito de 1 argumento para evitar el error en index.ts
   constructor(private fetcher: any) {
     super();
   }
 
-  /**
-   * 4. Corregido: Se cambia 'handle' por 'handleInternal' que es la función 
-   * que la clase abstracta Source obliga a implementar.
-   */
   override async handleInternal(ctx: any, type: 'movie' | 'series', id: TmdbId): Promise<any[]> {
-    // Validar si el usuario activó la opción de contenido Latino
     if (ctx.config?.mx !== 'on') return [];
 
     try {
-      // Resolver el nombre del contenido usando TMDB
       const meta = type === 'movie' ? await ctx.tmdb.getMovie(id.id) : await ctx.tmdb.getShow(id.id);
       const title = meta?.title || meta?.name;
       if (!title) return [];
 
-      // Petición de búsqueda
-      const searchUrl = `${this.baseUrl}/?s=${encodeURIComponent(title)}`;
+      // CORRECCIÓN: Convertir el título en un slug válido para la URL de búsqueda limpia
+      const cleanSlug = this.convertToSlug(title);
+      const searchUrl = `${this.baseUrl}/search/${cleanSlug}`;
       const searchHtml = await this.fetcher.get(searchUrl);
       
       const pageUrl = this.findCorrectMatch(searchHtml, title, type);
@@ -53,6 +45,20 @@ export class Pelisplus extends Source {
     }
   }
 
+  /**
+   * Transforma títulos normales en slugs para la ruta de búsqueda
+   * Ejemplo: "Spider-Man: No Way Home" -> "spider-man-no-way-home"
+   */
+  private convertToSlug(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD') // Elimina acentos
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '') // Elimina caracteres especiales
+      .trim()
+      .replace(/\s+/g, '-'); // Cambia espacios por guiones
+  }
+
   private findCorrectMatch(html: string, targetTitle: string, type: 'movie' | 'series'): string | null {
     const $ = cheerio.load(html);
     let matchedUrl: string | null = null;
@@ -62,7 +68,7 @@ export class Pelisplus extends Source {
       const titleText = $(element).find('.title, h3, h2').text().toLowerCase().trim();
       const href = $(element).find('a').attr('href');
 
-      if (!href) return true; // Equivalente a 'continue' en el loop de cheerio
+      if (!href) return true;
 
       const isSeriePage = href.includes('/serie/');
       if (type === 'series' && !isSeriePage) return true;
@@ -70,7 +76,7 @@ export class Pelisplus extends Source {
 
       if (titleText.includes(cleanTarget) || cleanTarget.includes(titleText)) {
         matchedUrl = href.startsWith('http') ? href : `${this.baseUrl}${href}`;
-        return false; // Equivalente a 'break' en el loop de cheerio
+        return false;
       }
       return true;
     });
@@ -82,7 +88,6 @@ export class Pelisplus extends Source {
     const $ = cheerio.load(html);
     const streams: any[] = [];
 
-    // 5. Corregido: Se cambia 'index' por '_' para evitar el error de variable declarada no usada
     $('iframe, .video-player iframe, [data-video]').each((_, element) => {
       let videoUrl = $(element).attr('src') || $(element).attr('data-video');
 
