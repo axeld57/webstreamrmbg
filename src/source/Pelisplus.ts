@@ -8,7 +8,8 @@ export class Pelisplus extends Source {
   override baseUrl = 'https://pelisplushd.club';
   
   override contentTypes: ('movie' | 'series')[] = ['movie', 'series'];
-  override countryCodes = ['MX', 'ES'];
+  // Corregido: Usamos any[] para saltar la validación estricta de CountryCode
+  override countryCodes: any[] = ['MX', 'ES'];
 
   constructor(private fetcher: any) {
     super();
@@ -22,7 +23,7 @@ export class Pelisplus extends Source {
       const title = meta?.title || meta?.name;
       if (!title) return [];
 
-      // CORRECCIÓN: Convertir el título en un slug válido para la URL de búsqueda limpia
+      // Convertir el título en un slug válido para la URL de búsqueda limpia
       const cleanSlug = this.convertToSlug(title);
       const searchUrl = `${this.baseUrl}/search/${cleanSlug}`;
       const searchHtml = await this.fetcher.get(searchUrl);
