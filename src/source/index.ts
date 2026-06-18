@@ -16,6 +16,7 @@ import { MeineCloud } from './MeineCloud';
 import { MostraGuarda } from './MostraGuarda';
 import { MovieBox } from './MovieBox';
 import { Movix } from './Movix';
+import { Pelisplus } from './Pelisplus'; // <-- Importación de tu nueva fuente
 import { Source } from './Source';
 import { VerHdLink } from './VerHdLink';
 import { VidSrc } from './VidSrc';
@@ -41,6 +42,7 @@ export const createSources = (fetcher: Fetcher): Source[] => {
     new CineHDPlus(fetcher),
     new Cuevana(fetcher),
     new HomeCine(fetcher),
+    new Pelisplus(fetcher), // <-- Registro activo en el sistema
     new VerHdLink(fetcher),
     // DE
     new Einschalten(fetcher),
